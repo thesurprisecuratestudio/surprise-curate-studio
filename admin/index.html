@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Login — The Surprise & Curate Studio</title>
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body style="background:var(--pink-soft);min-height:100vh;display:flex;align-items:center;justify-content:center">
+
+<div class="form-card" style="max-width:380px;width:92%">
+  <h2 class="text-center" style="margin:0 0 4px">Admin Login</h2>
+  <p class="muted text-center" style="margin:0 0 24px;font-size:13.5px">The Surprise &amp; Curate Studio</p>
+  <form id="admin-login-form">
+    <div class="field">
+      <label>Username</label>
+      <input type="text" name="username" required autocomplete="username">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" name="password" required autocomplete="current-password">
+    </div>
+    <div id="login-error" style="color:var(--danger);font-size:13px;margin-bottom:14px;display:none"></div>
+    <button type="submit" class="btn btn-pink btn-block">Sign In</button>
+  </form>
+</div>
+
+<script>
+document.getElementById("admin-login-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const errEl = document.getElementById("login-error");
+  errEl.style.display = "none";
+  const btn = e.target.querySelector("button");
+  btn.disabled = true; btn.textContent = "Signing in…";
+
+  try {
+    const res = await fetch("/api/admin-login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username: fd.get("username"), password: fd.get("password") }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Login failed");
+    window.location.href = "/admin/dashboard.html";
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.style.display = "block";
+    btn.disabled = false; btn.textContent = "Sign In";
+  }
+});
+</script>
+</body>
+</html>
