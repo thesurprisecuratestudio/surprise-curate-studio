@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Dashboard — The Surprise & Curate Studio</title>
+<link rel="stylesheet" href="/css/styles.css">
+<style>
+  body{background:#f7f5f7}
+  .admin-header{background:#fff;border-bottom:1px solid var(--line);padding:16px 0}
+  .admin-header .container{display:flex;justify-content:space-between;align-items:center}
+  .admin-shell{padding:28px 0}
+  .stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+  .stat-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px}
+  .stat-card .num{font-size:26px;font-weight:800}
+  .stat-card .lbl{font-size:12.5px;color:var(--muted)}
+  .filters{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+  .filters select,.filters input{padding:9px 12px;border:1px solid var(--line);border-radius:8px;font-size:13px}
+  .link-btn{background:none;border:0;color:var(--pink);font-weight:700;cursor:pointer;font-size:12.5px}
+  @media(max-width:900px){.stat-cards{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="admin-header">
+  <div class="container">
+    <strong>🪄 Admin Dashboard — The Surprise &amp; Curate Studio</strong>
+    <div style="display:flex;align-items:center;gap:14px">
+      <span id="admin-username" class="muted" style="font-size:13px"></span>
+      <button id="logout-btn" class="btn btn-outline btn-sm">Sign Out</button>
+    </div>
+  </div>
+</div>
+
+<div class="admin-shell container">
+
+  <div class="panel-tabs">
+    <div class="panel-tab active" data-tab="bookings">Bookings</div>
+    <div class="panel-tab" data-tab="addons">Add-ons</div>
+    <div class="panel-tab" data-tab="magnets">Magnet Types</div>
+    <div class="panel-tab" data-tab="terms">Terms &amp; Conditions</div>
+    <div class="panel-tab" data-tab="settings">Settings</div>
+  </div>
+
+  <!-- BOOKINGS TAB -->
+  <div class="tab-panel" data-tab-panel="bookings">
+    <div class="stat-cards" id="stat-cards"></div>
+    <div class="filters">
+      <select id="filter-status">
+        <option value="">All Statuses</option>
+        <option value="pending">Pending</option>
+        <option value="confirmed">Confirmed</option>
+        <option value="finished">Finished</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+      <select id="filter-payment">
+        <option value="">All Payment States</option>
+        <option value="submitted">Submitted</option>
+        <option value="verified">Verified</option>
+        <option value="rejected">Rejected</option>
+      </select>
+      <input type="text" id="filter-search" placeholder="Search name / mobile / ref code">
+      <button id="filter-apply" class="btn btn-outline btn-sm">Filter</button>
+    </div>
+    <div class="panel" style="overflow:auto">
+      <table id="bookings-table">
+        <thead>
+          <tr><th>Ref</th><th>Customer</th><th>Event</th><th>Date</th><th>Magnets</th><th>Advance</th><th>Payment</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody id="bookings-tbody"><tr><td colspan="9" class="muted">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ADDONS TAB -->
+  <div class="tab-panel" data-tab-panel="addons" style="display:none">
+    <div class="panel" style="margin-bottom:18px">
+      <h3 style="margin-top:0">Add New Add-on</h3>
+      <form id="addon-form" class="field-row">
+        <div class="field"><label>Name</label><input type="text" name="name" required></div>
+        <div class="field"><label>Price (₹)</label><input type="number" name="price" required min="0" step="0.01"></div>
+        <div class="field"><label>Unit Label</label><input type="text" name="unit_label" placeholder="per card / per bag"></div>
+        <div class="field" style="align-self:flex-end"><button class="btn btn-pink btn-sm">Add</button></div>
+      </form>
+    </div>
+    <div class="panel" style="overflow:auto">
+      <table><thead><tr><th>Name</th><th>Price</th><th>Unit</th><th>Active</th><th></th></tr></thead>
+      <tbody id="addons-tbody"></tbody></table>
+    </div>
+  </div>
+
+  <!-- MAGNET TYPES TAB -->
+  <div class="tab-panel" data-tab-panel="magnets" style="display:none">
+    <div class="panel" style="margin-bottom:18px">
+      <h3 style="margin-top:0">Add Magnet Type</h3>
+      <form id="magnet-form" style="display:flex;gap:12px;align-items:flex-end">
+        <div class="field" style="flex:1;margin:0"><label>Name</label><input type="text" name="name" required></div>
+        <button class="btn btn-pink btn-sm">Add</button>
+      </form>
+    </div>
+    <div class="panel" style="overflow:auto">
+      <table><thead><tr><th>Name</th><th>Active</th><th></th></tr></thead>
+      <tbody id="magnets-tbody"></tbody></table>
+    </div>
+  </div>
+
+  <!-- TERMS TAB -->
+  <div class="tab-panel" data-tab-panel="terms" style="display:none">
+    <div class="panel">
+      <h3 style="margin-top:0">Publish New Terms Version</h3>
+      <p class="muted" style="font-size:13px">Publishing a new version automatically deactivates the previous one. Existing bookings keep a reference to the version they agreed to.</p>
+      <textarea id="terms-textarea" rows="10" style="width:100%;padding:14px;border:1.5px solid var(--line);border-radius:10px;font-family:inherit;font-size:13.5px" placeholder="Enter terms & conditions text..."></textarea>
+      <button id="publish-terms-btn" class="btn btn-pink" style="margin-top:14px">Publish New Version</button>
+      <div id="terms-history" style="margin-top:24px"></div>
+    </div>
+  </div>
+
+  <!-- SETTINGS TAB -->
+  <div class="tab-panel" data-tab-panel="settings" style="display:none">
+    <div class="panel">
+      <h3 style="margin-top:0">Business Settings</h3>
+      <div class="field">
+        <label>UPI ID</label>
+        <input type="text" id="setting-upi">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Advance Payment Type</label>
+          <select id="setting-adv-type"><option value="percentage">Percentage</option><option value="fixed">Fixed Amount</option></select>
+        </div>
+        <div class="field">
+          <label>Advance Value</label>
+          <input type="number" id="setting-adv-value">
+        </div>
+      </div>
+      <div class="field">
+        <label>Minimum Advance Amount (₹)</label>
+        <input type="number" id="setting-adv-min">
+      </div>
+      <button id="save-settings-btn" class="btn btn-pink">Save Settings</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Screenshot modal -->
+<div id="screenshot-modal" class="lightbox">
+  <button class="lightbox-close" id="screenshot-modal-close">&times;</button>
+  <img id="screenshot-modal-img" src="">
+</div>
+
+<script src="/js/admin.js"></script>
+</body>
+</html>
