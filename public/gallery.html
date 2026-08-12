@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gallery — The Surprise & Curate Studio</title>
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body data-page="gallery">
+<div id="site-header"></div>
+
+<section class="section-tight">
+  <div class="container text-center">
+    <span class="eyebrow">Gallery</span>
+    <h1 style="font-size:clamp(28px,3.4vw,40px);margin:10px 0">Moments We've Captured</h1>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="gallery-filters" id="gallery-filters">
+      <span class="chip active" data-cat="">All</span>
+      <span class="chip" data-cat="wedding">Wedding</span>
+      <span class="chip" data-cat="birthday">Birthday</span>
+      <span class="chip" data-cat="corporate">Corporate</span>
+      <span class="chip" data-cat="general">General</span>
+    </div>
+    <div class="gallery-grid" id="full-gallery-grid"></div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="/js/supabaseClient.js"></script>
+<script src="/js/main.js"></script>
+<script src="/js/gallery-loader.js"></script>
+<script>
+document.addEventListener("scs:partials-ready", async () => {
+  await window.scsReady;
+
+  async function loadFullGallery(category = "") {
+    const grid = document.getElementById("full-gallery-grid");
+    grid.innerHTML = Array.from({ length: 8 }).map(() => `<div class="gallery-item skeleton"></div>`).join("");
+
+    let query = window.scsSupabase.from("gallery_images").select("*").eq("is_published", true).order("sort_order");
+    if (category) query = query.eq("category", category);
+    const { data, error } = await query;
+
+    if (error || !data?.length) {
+      grid.innerHTML = `<p class="muted" style="grid-column:1/-1;text-align:center">No photos in this category yet.</p>`;
+      return;
+    }
+    grid.innerHTML = "";
+    for (const img of data) {
+      const url = await scsGetGalleryPublicUrl(img.storage_path);
+      const el = document.createElement("div");
+      el.className = "gallery-item";
+      el.innerHTML = `<img src="${url}" alt="${img.caption || "Event photo"}" loading="lazy">`;
+      el.addEventListener("click", () => scsOpenLightbox(url));
+      grid.appendChild(el);
+    }
+  }
+
+  document.querySelectorAll("#gallery-filters .chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      document.querySelectorAll("#gallery-filters .chip").forEach((c) => c.classList.remove("active"));
+      chip.classList.add("active");
+      loadFullGallery(chip.dataset.cat);
+    });
+  });
+
+  loadFullGallery();
+});
+</script>
+</body>
+</html>

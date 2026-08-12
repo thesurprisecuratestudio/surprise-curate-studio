@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Terms & Requirements — The Surprise & Curate Studio</title>
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body data-page="terms">
+<div id="site-header"></div>
+<section class="section" style="max-width:760px;margin:0 auto">
+  <div class="container">
+    <h1 style="font-size:28px">Terms &amp; Requirements</h1>
+    <div id="terms-body" class="panel" style="white-space:pre-line;font-size:14.5px;line-height:1.7">Loading…</div>
+  </div>
+</section>
+<div id="site-footer"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="/js/supabaseClient.js"></script>
+<script src="/js/main.js"></script>
+<script>
+document.addEventListener("scs:partials-ready", async () => {
+  await window.scsReady;
+  const { data } = await window.scsSupabase.from("terms_versions").select("*").eq("is_active", true).limit(1).single();
+  document.getElementById("terms-body").textContent = data?.content || "Terms will be published soon.";
+});
+</script>
+</body>
+</html>

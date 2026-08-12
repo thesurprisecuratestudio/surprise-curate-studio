@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Book Your Event — The Surprise & Curate Studio</title>
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body data-page="booking">
+
+<div id="site-header"></div>
+
+<section class="section-tight">
+  <div class="container" style="max-width:760px">
+
+    <div class="text-center" style="margin-bottom:32px">
+      <h1 style="font-size:clamp(24px,3vw,34px);margin:0 0 10px">Fridge Magnet Live Stall — Booking</h1>
+      <p class="muted">Fill in your event details below. We'll confirm everything with you before the event.</p>
+    </div>
+
+    <div id="login-gate" class="form-card text-center" style="display:none">
+      <p style="font-weight:700;margin-bottom:16px">Please sign in with Google to start your booking</p>
+      <button id="gate-login-btn" class="btn btn-pink">Sign in with Google</button>
+    </div>
+
+    <form id="booking-form" class="form-card" style="display:none">
+
+      <div class="stepper" id="stepper">
+        <div class="step active" data-step="1">Your Details</div>
+        <div class="step" data-step="2">Event Info</div>
+        <div class="step" data-step="3">Magnets &amp; Add-ons</div>
+        <div class="step" data-step="4">Terms &amp; Payment</div>
+      </div>
+
+      <!-- STEP 1: Customer details -->
+      <div class="step-panel" data-panel="1">
+        <div class="field">
+          <label>Full Name *</label>
+          <input type="text" name="customer_name" required placeholder="Name of the person making the event confirmation">
+        </div>
+        <div class="field">
+          <label>Mobile Number *</label>
+          <input type="tel" name="customer_mobile" required pattern="[0-9]{10}" maxlength="10" placeholder="10-digit mobile number">
+        </div>
+        <div class="field">
+          <label>Email *</label>
+          <input type="email" name="customer_email" required placeholder="you@example.com">
+        </div>
+      </div>
+
+      <!-- STEP 2: Event info -->
+      <div class="step-panel" data-panel="2" style="display:none">
+        <div class="field-row">
+          <div class="field">
+            <label>Event Date *</label>
+            <input type="date" name="event_date" required>
+          </div>
+          <div class="field">
+            <label>Event Start Time *</label>
+            <input type="time" name="event_time" required>
+            <div class="hint">Mention the timing correctly.</div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Event Type *</label>
+          <select name="event_type" required>
+            <option value="">Select event type</option>
+            <option>Wedding</option>
+            <option>Reception</option>
+            <option>Engagement</option>
+            <option>Birthday</option>
+            <option>Corporate Event</option>
+            <option>Baby Shower</option>
+            <option>Anniversary</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Location *</label>
+          <textarea name="event_venue" rows="2" required placeholder="Full venue address / location of the event"></textarea>
+        </div>
+        <div class="field">
+          <label>Approx. Guest Count</label>
+          <input type="number" name="guest_count" min="1" placeholder="Optional">
+        </div>
+      </div>
+
+      <!-- STEP 3: Magnets & Add-ons -->
+      <div class="step-panel" data-panel="3" style="display:none">
+        <div class="field">
+          <label>Fridge Magnet Type *</label>
+          <div class="hint" style="margin-bottom:10px">Please select your preferred &amp; discussed magnet type</div>
+          <div class="radio-group" id="magnet-type-group"></div>
+        </div>
+        <div class="field">
+          <label>Confirmed Magnet Count *</label>
+          <div class="hint" style="margin-bottom:10px">Please select the final magnet count as confirmed during our discussion</div>
+          <input type="number" name="confirmed_magnet_count" required min="1" placeholder="e.g. 100">
+        </div>
+        <div class="field">
+          <label>Extra Magnets (Backup)</label>
+          <div class="hint" style="margin-bottom:10px">In case the confirmed quantity is exceeded during the event</div>
+          <select name="extra_magnets_range">
+            <option value="">Not required</option>
+            <option value="25-50">25 – 50 Magnets</option>
+            <option value="50-100">50 – 100 Magnets</option>
+            <option value="100-150">100 – 150 Magnets</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Add-Ons</label>
+          <div class="hint" style="margin-bottom:10px">Optional extras for gifting</div>
+          <div class="checkbox-group" id="addons-group"></div>
+        </div>
+      </div>
+
+      <!-- STEP 4: Terms & Payment -->
+      <div class="step-panel" data-panel="4" style="display:none">
+        <div class="panel" style="max-height:220px;overflow:auto;font-size:13px;color:var(--muted);margin-bottom:16px" id="terms-content">
+          Loading terms &amp; requirements…
+        </div>
+        <label class="checkbox-row" style="margin-bottom:24px">
+          <input type="checkbox" name="terms_accepted" required>
+          <span>I have read, understood, and agree to the above Terms &amp; Requirements. I confirm that all the required arrangements will be made available at the event venue to ensure smooth execution of the service.</span>
+        </label>
+
+        <div id="price-summary" class="panel" style="margin-bottom:20px"></div>
+
+        <div class="upi-box" style="margin-bottom:16px">
+          <span>Pay Advance via UPI</span>
+          <span id="upi-id-display">Loading…</span>
+        </div>
+        <div class="field">
+          <label>Advance Amount Paid *</label>
+          <input type="number" name="advance_paid" required min="1" placeholder="Amount transferred">
+        </div>
+        <div class="field">
+          <label>Payment Screenshot *</label>
+          <input type="file" name="payment_screenshot" accept="image/*" required>
+          <div class="hint">Upload a clear screenshot of your UPI payment confirmation.</div>
+        </div>
+        <div class="field">
+          <label>UPI Transaction ID (optional)</label>
+          <input type="text" name="payment_txn_id" placeholder="If available">
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;margin-top:28px;gap:12px">
+        <button type="button" id="btn-prev" class="btn btn-outline" style="visibility:hidden">← Back</button>
+        <button type="button" id="btn-next" class="btn btn-pink">Next →</button>
+        <button type="submit" id="btn-submit" class="btn btn-pink" style="display:none">Submit Booking ✅</button>
+      </div>
+    </form>
+
+    <div id="success-card" class="form-card text-center" style="display:none">
+      <div style="font-size:44px;margin-bottom:10px">🎉</div>
+      <h2 style="margin:0 0 10px">Booking Submitted!</h2>
+      <p class="muted" id="success-code" style="margin-bottom:24px"></p>
+      <p class="muted" style="margin-bottom:24px">We'll verify your payment and confirm your booking shortly. You can track its status anytime.</p>
+      <a href="/account.html" class="btn btn-pink">View My Bookings</a>
+    </div>
+
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="/js/supabaseClient.js"></script>
+<script src="/js/main.js"></script>
+<script src="/js/booking.js"></script>
+</body>
+</html>
