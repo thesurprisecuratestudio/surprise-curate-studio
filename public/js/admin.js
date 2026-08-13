@@ -32,6 +32,18 @@
   // =====================================================================
   // BOOKINGS
   // =====================================================================
+  let bookingView = "upcoming"; // "upcoming" | "finished"
+
+  document.querySelectorAll("[data-booking-view]").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      document.querySelectorAll("[data-booking-view]").forEach((t) => t.classList.remove("active"));
+      tab.classList.add("active");
+      bookingView = tab.dataset.bookingView;
+      loadBookings();
+    });
+  });
+  document.getElementById("filter-group-by")?.addEventListener("change", loadBookings);
+
   async function loadBookings() {
     const status = document.getElementById("filter-status").value;
     const payment_status = document.getElementById("filter-payment").value;
@@ -43,9 +55,54 @@
 
     const res = await fetch(`/api/admin-bookings?${params.toString()}`);
     const data = await res.json();
-    const bookings = data.bookings || [];
+    let bookings = data.bookings || [];
+
+    // Split into upcoming vs finished based on event date + status
+    const today = new Date().toISOString().slice(0, 10);
+    if (bookingView === "upcoming") {
+      bookings = bookings
+        .filter((b) => b.booking_status !== "finished" && b.booking_status !== "cancelled" && b.event_date >= today)
+        .sort((a, b) => a.event_date.localeCompare(b.event_date));
+    } else {
+      bookings = bookings
+        .filter((b) => b.booking_status === "finished" || b.event_date < today)
+        .sort((a, b) => b.event_date.localeCompare(a.event_date));
+    }
+
     renderStats(bookings);
-    renderBookingsTable(bookings);
+    const groupBy = document.getElementById("filter-group-by")?.value || "none";
+    if (groupBy === "none") {
+      renderBookingsTable(bookings);
+    } else {
+      renderGroupedBookings(bookings, groupBy);
+    }
+  }
+
+  function renderGroupedBookings(bookings, groupBy) {
+    const tbody = document.getElementById("bookings-tbody");
+    if (!bookings.length) {
+      tbody.innerHTML = `<tr><td colspan="9" class="muted">No bookings found.</td></tr>`;
+      return;
+    }
+    const groups = {};
+    bookings.forEach((b) => {
+      const key = groupBy === "day"
+        ? b.event_date
+        : b.event_date.slice(0, 7); // YYYY-MM
+      (groups[key] = groups[key] || []).push(b);
+    });
+    const monthFmt = (ym) => new Date(ym + "-01").toLocaleDateString("en-IN", { month: "long", year: "numeric" });
+    const dayFmt = (d) => new Date(d).toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+
+    tbody.innerHTML = Object.keys(groups).sort().map((key) => {
+      const rows = groups[key];
+      const heading = groupBy === "day" ? dayFmt(key) : monthFmt(key);
+      return `
+        <tr><td colspan="9" style="background:#faf5f7;font-weight:700;padding:10px 12px">${heading} <span class="muted" style="font-weight:400">(${rows.length})</span></td></tr>
+      ` + rows.map(bookingRowHtml).join("");
+    }).join("");
+
+    attachRowHandlers(tbody);
   }
 
   function renderStats(bookings) {
@@ -61,13 +118,8 @@
     `;
   }
 
-  function renderBookingsTable(bookings) {
-    const tbody = document.getElementById("bookings-tbody");
-    if (!bookings.length) {
-      tbody.innerHTML = `<tr><td colspan="9" class="muted">No bookings found.</td></tr>`;
-      return;
-    }
-    tbody.innerHTML = bookings.map((b) => `
+  function bookingRowHtml(b) {
+    return `
       <tr>
         <td>${b.booking_code}</td>
         <td>${b.customer_name}<br><span class="muted" style="font-size:11.5px">${b.customer_mobile}</span></td>
@@ -94,8 +146,10 @@
         </td>
         <td><span class="badge badge-${b.booking_status}">${b.booking_status}</span></td>
       </tr>
-    `).join("");
+    `;
+  }
 
+  function attachRowHandlers(tbody) {
     tbody.querySelectorAll("[data-view-ss]").forEach((btn) => {
       btn.addEventListener("click", () => viewScreenshot(btn.dataset.viewSs));
     });
@@ -105,6 +159,16 @@
     tbody.querySelectorAll("[data-status-select]").forEach((sel) => {
       sel.addEventListener("change", () => updateBooking(sel.dataset.statusSelect, { booking_status: sel.value }));
     });
+  }
+
+  function renderBookingsTable(bookings) {
+    const tbody = document.getElementById("bookings-tbody");
+    if (!bookings.length) {
+      tbody.innerHTML = `<tr><td colspan="9" class="muted">No bookings found.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = bookings.map(bookingRowHtml).join("");
+    attachRowHandlers(tbody);
   }
 
   async function updateBooking(id, fields) {
