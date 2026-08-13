@@ -24,6 +24,7 @@
       document.querySelector(`.tab-panel[data-tab-panel="${tab.dataset.tab}"]`).style.display = "block";
       if (tab.dataset.tab === "addons") loadAddons();
       if (tab.dataset.tab === "magnets") loadMagnetTypes();
+      if (tab.dataset.tab === "gallery") loadGallery();
       if (tab.dataset.tab === "terms") loadTerms();
       if (tab.dataset.tab === "settings") loadSettings();
     });
@@ -283,6 +284,83 @@
       };
     });
   }
+
+  // =====================================================================
+  // GALLERY
+  // =====================================================================
+  async function loadGallery() {
+    const res = await fetch("/api/admin-gallery");
+    const { images } = await res.json();
+    const grid = document.getElementById("gallery-grid");
+    if (!images || !images.length) {
+      grid.innerHTML = `<p class="muted">No photos uploaded yet.</p>`;
+      return;
+    }
+    grid.innerHTML = images.map((img) => `
+      <div class="panel" style="padding:8px">
+        <img src="${img.public_url}" style="width:100%;height:110px;object-fit:cover;border-radius:8px;display:block" loading="lazy">
+        <div style="font-size:11.5px;margin-top:6px;color:var(--muted)">${img.category || "general"}</div>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;margin-top:4px">
+          <input type="checkbox" data-gallery-publish="${img.id}" ${img.is_published ? "checked" : ""}> Published
+        </label>
+        <button class="link-btn" data-gallery-delete="${img.id}" style="margin-top:4px">Delete</button>
+      </div>
+    `).join("");
+
+    grid.querySelectorAll("[data-gallery-publish]").forEach((cb) => {
+      cb.onchange = async () => {
+        await fetch("/api/admin-gallery", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: cb.dataset.galleryPublish, is_published: cb.checked }),
+        });
+      };
+    });
+    grid.querySelectorAll("[data-gallery-delete]").forEach((btn) => {
+      btn.onclick = async () => {
+        if (!confirm("Delete this photo?")) return;
+        await fetch(`/api/admin-gallery?id=${btn.dataset.galleryDelete}`, { method: "DELETE" });
+        loadGallery();
+      };
+    });
+  }
+
+  document.getElementById("gallery-form")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const file = fd.get("photo");
+    if (!file || !file.size) return;
+    const btn = document.getElementById("gallery-upload-btn");
+    btn.disabled = true;
+    btn.textContent = "Uploading…";
+    try {
+      const dataBase64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(",")[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      const res = await fetch("/api/admin-gallery", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          filename: file.name,
+          contentType: file.type,
+          dataBase64,
+          category: fd.get("category"),
+          caption: fd.get("caption"),
+        }),
+      });
+      if (!res.ok) throw new Error((await res.json()).error || "Upload failed");
+      e.target.reset();
+      loadGallery();
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Upload";
+    }
+  });
 
   // =====================================================================
   // TERMS
