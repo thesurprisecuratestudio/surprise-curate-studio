@@ -38,6 +38,7 @@
     <div class="panel-tab active" data-tab="bookings">Bookings</div>
     <div class="panel-tab" data-tab="addons">Add-ons</div>
     <div class="panel-tab" data-tab="magnets">Magnet Types</div>
+    <div class="panel-tab" data-tab="gallery">Gallery</div>
     <div class="panel-tab" data-tab="terms">Terms &amp; Conditions</div>
     <div class="panel-tab" data-tab="settings">Settings</div>
   </div>
@@ -112,6 +113,30 @@
     <div class="panel" style="overflow:auto">
       <table><thead><tr><th>Name</th><th>Active</th><th></th></tr></thead>
       <tbody id="magnets-tbody"></tbody></table>
+    </div>
+  </div>
+
+  <!-- GALLERY TAB -->
+  <div class="tab-panel" data-tab-panel="gallery" style="display:none">
+    <div class="panel" style="margin-bottom:18px">
+      <h3 style="margin-top:0">Upload Photo</h3>
+      <form id="gallery-form" class="field-row">
+        <div class="field"><label>Photo</label><input type="file" name="photo" accept="image/*" required></div>
+        <div class="field">
+          <label>Category</label>
+          <select name="category">
+            <option value="general">General</option>
+            <option value="wedding">Wedding</option>
+            <option value="birthday">Birthday</option>
+            <option value="corporate">Corporate</option>
+          </select>
+        </div>
+        <div class="field"><label>Caption (optional)</label><input type="text" name="caption" placeholder="e.g. Wedding reception, Chennai"></div>
+        <div class="field" style="align-self:flex-end"><button class="btn btn-pink btn-sm" id="gallery-upload-btn">Upload</button></div>
+      </form>
+    </div>
+    <div class="panel" style="overflow:auto">
+      <div id="gallery-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px"></div>
     </div>
   </div>
 
