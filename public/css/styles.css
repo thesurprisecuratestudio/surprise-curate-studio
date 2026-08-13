@@ -60,7 +60,7 @@ header{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid 
   position:relative;
   background:
     linear-gradient(100deg,#fff6f8 0%,#fff6f8 38%,rgba(255,246,248,0.75) 55%,rgba(255,246,248,0.15) 78%,rgba(255,246,248,0) 100%),
-    url('/images/hero-bg.jpg') center 25% / cover no-repeat;
+    url('/images/hero-bg.png') center 25% / cover no-repeat;
 }
 .hero-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:48px;align-items:center;position:relative;z-index:1}
 .eyebrow{display:inline-block;background:#ffe3ec;color:var(--pink);font-weight:700;font-size:12px;padding:6px 14px;border-radius:999px;margin-bottom:16px;letter-spacing:.02em}
@@ -202,7 +202,7 @@ tr:hover td{background:#fffafb}
   .hero{
     background:
       linear-gradient(180deg,rgba(255,246,248,0.35) 0%,#fff6f8 62%,#fff6f8 100%),
-      url('/images/hero-bg.jpg') center 20% / cover no-repeat;
+      url('/images/hero-bg.png') center 20% / cover no-repeat;
   }
   .grid-3{grid-template-columns:repeat(2,1fr)}
   .footer-grid{grid-template-columns:1fr 1fr}
