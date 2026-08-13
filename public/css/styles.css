@@ -53,13 +53,21 @@ header{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid 
 .btn[disabled]{opacity:.55;cursor:not-allowed}
 
 /* ---------- Hero ---------- */
-.hero{min-height:560px;display:flex;align-items:center;background:linear-gradient(120deg,#fff6f8 0%,#fff7f8 45%,#fff0f4 100%)}
-.hero-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:48px;align-items:center}
+.hero{
+  min-height:560px;
+  display:flex;
+  align-items:center;
+  position:relative;
+  background:
+    linear-gradient(100deg,#fff6f8 0%,#fff6f8 38%,rgba(255,246,248,0.75) 55%,rgba(255,246,248,0.15) 78%,rgba(255,246,248,0) 100%),
+    url('/images/hero-bg.jpg') center 25% / cover no-repeat;
+}
+.hero-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:48px;align-items:center;position:relative;z-index:1}
 .eyebrow{display:inline-block;background:#ffe3ec;color:var(--pink);font-weight:700;font-size:12px;padding:6px 14px;border-radius:999px;margin-bottom:16px;letter-spacing:.02em}
 .hero h1{font-size:clamp(32px,4.4vw,54px);line-height:1.12;margin:0 0 18px}
 .hero p{font-size:17px;color:var(--muted);max-width:520px;margin:0 0 28px}
 .hero-actions{display:flex;gap:14px;flex-wrap:wrap}
-.hero-visual{border-radius:24px;overflow:hidden;box-shadow:var(--shadow);aspect-ratio:4/5;background:#fce3ea url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><rect width="10" height="10" fill="%23fce3ea"/></svg>')}
+.hero-visual{aspect-ratio:4/5;background:transparent}
 
 /* ---------- Section headers ---------- */
 .section-head{max-width:640px;margin:0 auto 44px;text-align:center}
@@ -191,6 +199,11 @@ tr:hover td{background:#fffafb}
 @media (max-width:960px){
   .hero-grid{grid-template-columns:1fr}
   .hero-visual{order:-1;aspect-ratio:16/9}
+  .hero{
+    background:
+      linear-gradient(180deg,rgba(255,246,248,0.35) 0%,#fff6f8 62%,#fff6f8 100%),
+      url('/images/hero-bg.jpg') center 20% / cover no-repeat;
+  }
   .grid-3{grid-template-columns:repeat(2,1fr)}
   .footer-grid{grid-template-columns:1fr 1fr}
   .gallery-grid{grid-template-columns:repeat(3,1fr)}
