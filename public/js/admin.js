@@ -16,9 +16,14 @@
   });
 
   // ---- Tabs ----
-  document.querySelectorAll(".panel-tab").forEach((tab) => {
+  // Scoped to only the top-level tabs (elements with a data-tab attribute).
+  // The nested Upcoming/Finished toggle also uses the .panel-tab class, so
+  // without this scoping, clicking it used to trigger this handler too,
+  // hide every panel, then crash on a missing data-tab lookup — leaving
+  // the whole page blank.
+  document.querySelectorAll(".panel-tab[data-tab]").forEach((tab) => {
     tab.addEventListener("click", () => {
-      document.querySelectorAll(".panel-tab").forEach((t) => t.classList.remove("active"));
+      document.querySelectorAll(".panel-tab[data-tab]").forEach((t) => t.classList.remove("active"));
       document.querySelectorAll(".tab-panel").forEach((p) => (p.style.display = "none"));
       tab.classList.add("active");
       document.querySelector(`.tab-panel[data-tab-panel="${tab.dataset.tab}"]`).style.display = "block";
