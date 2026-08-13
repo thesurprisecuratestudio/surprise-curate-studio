@@ -45,6 +45,17 @@
   <!-- BOOKINGS TAB -->
   <div class="tab-panel" data-tab-panel="bookings">
     <div class="stat-cards" id="stat-cards"></div>
+    <div class="panel-tabs" style="margin-bottom:14px">
+      <div class="panel-tab active" data-booking-view="upcoming">Upcoming</div>
+      <div class="panel-tab" data-booking-view="finished">Finished</div>
+    </div>
+    <div class="filters" style="margin-bottom:6px">
+      <select id="filter-group-by">
+        <option value="none">List View</option>
+        <option value="day">Day-wise</option>
+        <option value="month">Month-wise</option>
+      </select>
+    </div>
     <div class="filters">
       <select id="filter-status">
         <option value="">All Statuses</option>
