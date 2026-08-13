@@ -91,6 +91,9 @@
       updatePriceSummary();
     });
     document.querySelector('input[name="confirmed_magnet_count"]').addEventListener("input", updatePriceSummary);
+    document.querySelector('input[name="advance_paid"]').addEventListener("input", (e) => {
+      e.target.dataset.userEdited = "1";
+    });
   }
 
   function getSelectedAddons() {
@@ -115,6 +118,12 @@
       </div>
       <div class="hint" style="margin-top:8px">Final magnet stall pricing will be confirmed separately as discussed. Advance suggested: ~${advRule.value}${advRule.type === "percentage" ? "%" : " Rs"} (min ₹${advRule.min_amount}).</div>
     `;
+
+    const amountToPay = advRule.type === "fixed" ? Number(advRule.value) : Number(advRule.min_amount);
+    const amtEl = document.getElementById("amount-to-pay-value");
+    if (amtEl) amtEl.textContent = `₹${amountToPay.toLocaleString("en-IN")}`;
+    const advInput = document.querySelector('input[name="advance_paid"]');
+    if (advInput && !advInput.dataset.userEdited) advInput.value = amountToPay;
   }
 
   function bindStepNav() {
